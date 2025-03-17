@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="lt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,10 +8,14 @@
 </head>
 <body>
     <h1>Čekiukai</h1>
-    <input type="file" id="file-input" accept="image/*">
-    <button id="process-btn">Process Receipt</button>
-    
+
+    <div class="upload-container">
+        <input type="file" id="file-input" accept="image/jpeg, image/png">
+        <button id="process-btn">Process receipt</button>
+    </div>
+
     <p id="status"></p>
+    <div id="image-preview"></div>
     <pre id="output"></pre>
 
     <script src="main.js" type="module"></script>
