@@ -24,6 +24,20 @@ document.addEventListener('DOMContentLoaded', () => {
         ).then(({ data: { text } }) => {
             output.textContent = text;
             status.textContent = 'Done!';
+
+            const check = prisma.check.create({
+                data: {
+                  userId: user.id,
+                  totalPrice: 9.00,
+                  products: [
+                    { name: "Milk", price: 2.50 },
+                    { name: "Bread", price: 1.50 },
+                    { name: "Cheese", price: 5.00 }
+                  ],
+                },
+              });
+              console.log("Check created:", check);
+
         }).catch(error => {
             console.error(error);
             status.textContent = 'Error processing the receipt.';
