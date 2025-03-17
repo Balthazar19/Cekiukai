@@ -1,46 +1,34 @@
 import Tesseract from 'tesseract.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('process-btn').addEventListener('click', () => {
-        const fileInput = document.getElementById('file-input');
-        const output = document.getElementById('output');
+    document.getElementById('process-btn').addEventListener('click', async () => {
         const status = document.getElementById('status');
-
-        if (fileInput.files.length === 0) {
-            alert('Please upload an image of the receipt.');
-            return;
-        }
-
-        const image = fileInput.files[0];
 
         status.textContent = 'Processing...';
 
-        Tesseract.recognize(
-            image,
-            'eng',
-            {
-                logger: m => console.log(m),
-            }
-        ).then(({ data: { text } }) => {
-            output.textContent = text;
-            status.textContent = 'Done!';
-
-            const check = prisma.check.create({
-                data: {
-                  userId: user.id,
-                  totalPrice: 9.00,
-                  products: [
+        try {
+            const requestBody = {
+                userId: "dummyUserId123",
+                products: [
                     { name: "Milk", price: 2.50 },
                     { name: "Bread", price: 1.50 },
                     { name: "Cheese", price: 5.00 }
-                  ],
-                },
-              });
-              console.log("Check created:", check);
+                ],
+                totalPrice: 9.00
+            };
 
-        }).catch(error => {
+            const response = await fetch('http://localhost:5000/api/createCheck', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody),
+            });
+
+            const result = await response.json();
+            console.log("✅ Server Response:", result);
+            status.textContent = 'Check saved successfully!';
+        } catch (error) {
             console.error(error);
             status.textContent = 'Error processing the receipt.';
-        });
+        }
     });
 });

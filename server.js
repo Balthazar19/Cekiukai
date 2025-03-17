@@ -1,26 +1,39 @@
 import express from 'express';
 import cors from 'cors';
-import dbServer from './db.server.js';
 import dotenv from 'dotenv';
+import { PrismaClient } from '@prisma/client';
 
-
+dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cors());
-dotenv.config();
+
+const prisma = new PrismaClient();
 
 app.post('/api/createCheck', async (req, res) => {
     try {
-        const { text } = req.body;
-        if (!text) return res.status(400).json({ error: "Text is required" });
 
-        const newCheck = await dbServer.check.create({
-            data: { text, createdAt: new Date() },
+        const userId = "dummyUserId123";
+
+        const products = [
+            { name: "Milk", price: 2.50 },
+            { name: "Bread", price: 1.50 },
+            { name: "Cheese", price: 5.00 }
+        ];
+        const totalPrice = 9.00;
+
+        const newCheck = await prisma.check.create({
+            data: {
+                userId,
+                products,
+                totalPrice,
+                createdAt: new Date(),
+            },
         });
 
-        res.json({ message: "Check saved successfully!", newCheck });
+        res.json({ message: "✅ Dummy check saved successfully!", newCheck });
     } catch (error) {
-        console.error("Error saving check:", error);
+        console.error("❌ Error saving dummy check:", error);
         res.status(500).json({ error: "Failed to save check" });
     }
 });
