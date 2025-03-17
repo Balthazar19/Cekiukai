@@ -6,9 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node server.js"
   },
   "devDependencies": {
+    "chai": "^5.2.0",
+    "jsdom": "^26.0.0",
+    "mocha": "^11.1.0",
+    "sinon": "^19.0.2",
     "vite": "^6.0.5"
   },
   "dependencies": {
@@ -18,5 +23,18 @@
     "express": "^4.21.2",
     "path": "^0.12.7",
     "tesseract.js": "^6.0.0"
-  }
+  },
+  "description": "\"Cekiukai project\"",
+  "main": "db.server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Balthazar19/Cekiukai.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Balthazar19/Cekiukai/issues"
+  },
+  "homepage": "https://github.com/Balthazar19/Cekiukai#readme"
 }
