@@ -12,13 +12,11 @@ const prisma = new PrismaClient();
 
 app.post('/api/createCheck', async (req, res) => {
     try {
-
         const user = await prisma.user.findFirst();
         if (!user) {
             return res.status(400).json({ error: "No users found in the database" });
         }
         const userId = user.id;
-
 
         const products = [
             { name: "Milk", price: 2.50 },
@@ -43,5 +41,28 @@ app.post('/api/createCheck', async (req, res) => {
     }
 });
 
+app.post("/api/login", async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        const user = await prisma.user.findFirst({
+            where: { username, password },
+        });
+
+        if (user) {
+            res.json({ success: true, message: "Login successful!" });
+        } else {
+            res.status(401).json({ success: false, message: "Invalid username or password!" });
+        }
+    } catch (error) {
+        console.error("❌ Login error:", error);
+        res.status(500).json({ success: false, message: "Server error!" });
+    }
+});
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+if (process.env.NODE_ENV !== "test") {
+    app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+}
+
+export default app;
