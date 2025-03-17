@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGO_URL")
+}
+
+model User {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  username  String    @unique
+  password  String
+  checks    Check[]   @relation("UserChecks") // One User -> Many Checks
+}
+
+model Check {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id], name: "UserChecks")
+  products   Json     
+  totalPrice Float
+  createdAt  DateTime @default(now())
+}
