@@ -13,7 +13,12 @@ const prisma = new PrismaClient();
 app.post('/api/createCheck', async (req, res) => {
     try {
 
-        const userId = "dummyUserId123";
+        const user = await prisma.user.findFirst();
+        if (!user) {
+            return res.status(400).json({ error: "No users found in the database" });
+        }
+        const userId = user.id;
+
 
         const products = [
             { name: "Milk", price: 2.50 },
