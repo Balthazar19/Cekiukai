@@ -92,8 +92,26 @@
   .login-container button:hover {
     background-color: #45a049;
   }
+
+  
   
   #login-status {
     margin-top: 10px;
     font-weight: bold;
   }
+
+  #register-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+#register-button:hover {
+    background-color: #0056b3;
+}
