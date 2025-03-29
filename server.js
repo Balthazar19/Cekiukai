@@ -11,6 +11,18 @@ app.use(cors());
 
 const prisma = new PrismaClient();
 
+app.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        console.log(`${req.method} ${req.url} took ${duration} ms`);
+        if (duration > 3000) {
+            console.warn(`⚠️ Slow request: ${req.method} ${req.url} took ${duration} ms`);
+        }
+    });
+    next();
+});
+
 app.post('/api/createCheck', async (req, res) => {
     try {
         const user = await prisma.user.findFirst();
