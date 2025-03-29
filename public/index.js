@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const image = fileInput.files[0];
 
-        // Validate file format (JPG, JPEG, PNG)
-        const allowedFormats = ['image/jpeg', 'image/png'];
+        // Validate file format (JPEG, PNG, JPG)
+        const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg'];
         if (!allowedFormats.includes(image.type)) {
             status.textContent = 'Invalid file format! We only support JPG, JPEG, PNG.';
             status.style.color = 'red';
