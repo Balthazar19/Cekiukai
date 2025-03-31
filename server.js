@@ -58,20 +58,28 @@ app.post("/api/login", async (req, res) => {
     try {
         const { username, password } = req.body;
 
+        // Find the user by username
         const user = await prisma.user.findFirst({
-            where: { username, password },
+            where: { username },
         });
 
-        if (user) {
-            res.json({ success: true, message: "Login successful!" });
-        } else {
-            res.status(401).json({ success: false, message: "Invalid username or password!" });
+        if (!user) {
+            return res.status(401).json({ success: false, message: "Invalid username or password!" });
         }
+
+        // Compare the entered password with the stored hashed password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ success: false, message: "Invalid username or password!" });
+        }
+
+        res.json({ success: true, message: "Login successful!" });
     } catch (error) {
         console.error("❌ Login error:", error);
         res.status(500).json({ success: false, message: "Server error!" });
     }
 });
+
 
 app.post("/api/register", async (req, res) => {
     const { username, password } = req.body;
