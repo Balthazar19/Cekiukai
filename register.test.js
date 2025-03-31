@@ -62,7 +62,7 @@ async function testSuccessfulRegistration() {
         headers: { "Content-Type": "application/json" },
     };
 
-    const requestBody = { username: "user13", password: "validpassword123" };
+    const requestBody = { username: "useris", password: "validpassword123" };
     const response = await makeRequest(options, requestBody);
 
     assert.strictEqual(response.status, 201, `Expected status 201 but got ${response.status}`);
@@ -108,7 +108,7 @@ async function testNetworkFailure() {
 
 // Run all tests
 async function runTests() {
-    console.log("🚀 Running Tests...\n");
+    console.log("Running Tests...\n");
 
     await runTest(testPasswordValidation, "testPasswordValidation");
     await runTest(testSuccessfulRegistration, "testSuccessfulRegistration");
