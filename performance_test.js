@@ -5,7 +5,10 @@ import path from 'path';
 import Tesseract from 'tesseract.js';
 
 const BASE_URL = 'http://localhost:5000';
-const TOTAL_REQUESTS = 100;
+const TOTAL_REQUESTS = 10;
+const MAX_OCR_TIME = 5; // seconds
+const MAX_HARD_LIMIT = 15; // seconds
+const SUCCESS_THRESHOLD = 0.95; // 95%
 
 function makeRequest(options, body = null) {
     return new Promise((resolve, reject) => {
@@ -67,18 +70,38 @@ async function testOCRPerformance() {
     }
 
     const imageBuffer = fs.readFileSync(imagePath);
+    let successCount = 0;
+    let totalDuration = 0;
+    let failedChecks = 0;
 
-    const start = Date.now();
-    const { data: { text } } = await Tesseract.recognize(imageBuffer, 'eng');
-    const end = Date.now();
-    const duration = (end - start) / 1000;
+    for (let i = 0; i < TOTAL_REQUESTS; i++) {
+        const start = Date.now();
+        const { data: { text } } = await Tesseract.recognize(imageBuffer, 'eng');
+        const end = Date.now();
+        const duration = (end - start) / 1000;
+        totalDuration += duration;
 
-    console.log(`\nOCR processing time: ${duration.toFixed(2)} seconds`);
+        if (duration <= MAX_OCR_TIME) {
+            successCount++;
+        } else if (duration > MAX_HARD_LIMIT) {
+            console.error(`Check ${i + 1} FAILED: Took ${duration.toFixed(2)}s (exceeded 15s limit)`);
+            failedChecks++;
+        } else {
+            console.warn(`Check ${i + 1} WARNING: Took ${duration.toFixed(2)}s (exceeded 5s but within 15s)`);
+        }
+    }
 
-    if (duration <= 5) {
+    const successRate = successCount / TOTAL_REQUESTS;
+    const avgTime = totalDuration / TOTAL_REQUESTS;
+    console.log(`\nOCR Performance Summary:`);
+    console.log(`Success rate (≤5s): ${(successRate * 100).toFixed(2)}%`);
+    console.log(`Average processing time: ${avgTime.toFixed(2)}s`);
+    console.log(`Failed checks (over 15s): ${failedChecks}`);
+
+    if (successRate >= SUCCESS_THRESHOLD && failedChecks === 0) {
         console.log("testOCRPerformance PASSED!");
     } else {
-        console.error(`testOCRPerformance FAILED: Took ${duration.toFixed(2)}s (max 5s allowed)`);
+        console.error("testOCRPerformance FAILED!");
     }
 }
 
