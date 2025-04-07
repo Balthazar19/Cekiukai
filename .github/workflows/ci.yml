@@ -33,8 +33,15 @@ jobs:
           sleep 5
 
       - name: Run tests
-        run: npm test
+        run: npm test | tee test-output.log
 
       - name: Print server log if tests fail
         if: failure()
         run: cat server.log
+
+      - name: Fail if any test failed
+        run: |
+          if grep -q "FAILED" server.log || grep -q "FAILED" test-output.log; then
+            echo "One or more tests FAILED"
+            exit 1
+          fi
