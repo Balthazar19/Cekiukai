@@ -76,7 +76,7 @@ async function testValidLogin() {
         headers: { "Content-Type": "application/json" },
     };
 
-    const response = await makeRequest(options, { username: "username", password: "password" });
+    const response = await makeRequest(options, { username: "Teisingas123", password: "Teisingas123" });
 
     assert.strictEqual(response.status, 200, "Expected status 200 for valid login");
     assert.strictEqual(response.body.success, true, "Expected login to succeed");
