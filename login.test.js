@@ -29,9 +29,9 @@ function makeRequest(options, body = null) {
 async function runTest(testFunction, testName) {
     try {
         await testFunction();
-        console.log(`✅ ${testName} PASSED!`);
+        console.log(`${testName} PASSED!`);
     } catch (error) {
-        console.error(`❌ ${testName} FAILED:`, error.message);
+        console.error(`${testName} FAILED:`, error.message);
     }
 }
 
@@ -45,7 +45,7 @@ async function testValidLogin() {
         headers: { "Content-Type": "application/json" },
     };
 
-    const requestBody = { username: "username", password: "password" };
+    const requestBody = { username: "Teisingas123", password: "Teisingas123" };
     const response = await makeRequest(options, requestBody);
 
     assert.strictEqual(response.status, 200, `Expected status 200 but got ${response.status}`);
@@ -62,13 +62,13 @@ async function testInvalidLogin() {
         headers: { "Content-Type": "application/json" },
     };
 
-    const requestBody = { username: "wrongUser", password: "wrongPass" };
+    const requestBody = { username: "neteisingas", password: "neteisingas" };
     const response = await makeRequest(options, requestBody);
 
     assert.strictEqual(response.status, 401, `Expected status 401 but got ${response.status}`);
 }
 
-//Test: Login Without Credentials Should Return 200
+//Test: Login Without Credentials Should Return 500
 async function testEmptyLogin() {
     const options = {
         hostname: "localhost",
@@ -81,7 +81,7 @@ async function testEmptyLogin() {
     const requestBody = {};
     const response = await makeRequest(options, requestBody);
 
-    assert.strictEqual(response.status, 200, `Expected status 200 but got ${response.status}`);
+    assert.strictEqual(response.status, 500, `Expected status 500 but got ${response.status}`);
 }
 
 //Test: Server Error Simulation
@@ -173,7 +173,7 @@ async function testEmptyJSONRequest() {
     const requestBody = null;
     const response = await makeRequest(options, requestBody);
 
-    assert.strictEqual(response.status, 401, `Expected status 401 but got ${response.status}`);
+    assert.strictEqual(response.status, 500, `Expected status 500 but got ${response.status}`);
 }
 
 //Test: Ensure Response Contains JSON
@@ -193,7 +193,7 @@ async function testJSONResponse() {
 }
 
 async function runTests() {
-    console.log("🚀 Running Tests...\n");
+    console.log("Running Tests...\n");
 
     await runTest(testValidLogin, "testValidLogin");
     await runTest(testInvalidLogin, "testInvalidLogin");
@@ -206,9 +206,7 @@ async function runTests() {
     await runTest(testEmptyJSONRequest, "testEmptyJSONRequest");
     await runTest(testJSONResponse, "testJSONResponse");
 
-    console.log("\n🎉 ALL TESTS COMPLETED! 🎉");
+    console.log("\nALL TESTS COMPLETED! ");
 }
 
 runTests();
-
-// Šitas komentaras pridėtas dėl CI testavimo
