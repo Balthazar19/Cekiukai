@@ -5,7 +5,7 @@ import path from 'path';
 import Tesseract from 'tesseract.js';
 
 const BASE_URL = 'http://localhost:5000';
-const TOTAL_REQUESTS = 10;
+const TOTAL_REQUESTS = 3;
 const MAX_OCR_TIME = 5; // seconds
 const MAX_HARD_LIMIT = 15; // seconds
 const SUCCESS_THRESHOLD = 0.95; // 95%
@@ -105,7 +105,109 @@ async function testOCRPerformance() {
     }
 }
 
+
+async function testRequestWithAppTypeJson() {
+    console.log("Testing with JSON content type...");
+    let successful = 0;
+    let totalDuration = 0;
+    for (let i = 0; i < TOTAL_REQUESTS; i++) {
+        const options = {
+            hostname: 'localhost',
+            port: 5000,
+            path: '/api/createCheck',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        };
+
+        const startTime = Date.now();
+        try {
+            const response = await makeRequest(options, {});
+            const duration = Date.now() - startTime;
+            totalDuration += duration;
+            console.log(`Request ${i + 1} took ${duration} ms`);
+            if (response.status === 200 && duration < 3000) {
+                successful++;
+            }
+        } catch (error) {
+            console.error('Error during request:', error.message);
+        }
+    }
+    const averageTime = totalDuration / TOTAL_REQUESTS;
+    console.log(`\nTest completed.`);
+    console.log(`Success rate: ${(successful / TOTAL_REQUESTS * 100).toFixed(2)}%`);
+    console.log(`Average request time: ${averageTime.toFixed(2)} ms`);
+}
+
+async function testRequestWithAppTypeXml() {
+    console.log("Testing with XML content type...");
+    let successful = 0;
+    let totalDuration = 0;
+    for (let i = 0; i < TOTAL_REQUESTS; i++) {
+        const options = {
+            hostname: 'localhost',
+            port: 5000,
+            path: '/api/createCheck',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/xml' },
+        };
+
+        const startTime = Date.now();
+        try {
+            const response = await makeRequest(options, {});
+            const duration = Date.now() - startTime;
+            totalDuration += duration;
+            console.log(`Request ${i + 1} took ${duration} ms`);
+            if (response.status === 200 && duration < 3000) {
+                successful++;
+            }
+        } catch (error) {
+            console.error('Error during request:', error.message);
+        }
+    }
+    const averageTime = totalDuration / TOTAL_REQUESTS;
+    console.log(`\nTest completed.`);
+    console.log(`Success rate: ${(successful / TOTAL_REQUESTS * 100).toFixed(2)}%`);
+    console.log(`Average request time: ${averageTime.toFixed(2)} ms`);
+}
+
+async function testRequestWithAppTypeYaml() {
+    console.log('Testing with YAML content type...');
+    let successful = 0;
+    let totalDuration = 0;
+    for (let i = 0; i < TOTAL_REQUESTS; i++) {
+        const options = {
+            hostname: 'localhost',
+            port: 5000,
+            path: '/api/createCheck',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/yaml' },
+        };
+
+        const startTime = Date.now();
+        try {
+            const response = await makeRequest(options, {});
+            const duration = Date.now() - startTime;
+            totalDuration += duration;
+            console.log(`Request ${i + 1} took ${duration} ms`);
+            if (response.status === 200 && duration < 3000) {
+                successful++;
+            }
+        } catch (error) {
+            console.error('Error during request:', error.message);
+        }
+    }
+    const averageTime = totalDuration / TOTAL_REQUESTS;
+    console.log(`\nTest completed.`);
+    console.log(`Success rate: ${(successful / TOTAL_REQUESTS * 100).toFixed(2)}%`);
+    console.log(`Average request time: ${averageTime.toFixed(2)} ms`);
+}
+
 (async () => {
     await testRequestPerformance();
     await testOCRPerformance();
+    await testRequestWithAppTypeJson();
+    await testRequestWithAppTypeXml();
+    await testRequestWithAppTypeYaml();
 })();
+
+

@@ -11,6 +11,15 @@ app.use(cors());
 
 const prisma = new PrismaClient();
 
+// Enforce JSON Content-Type middleware
+app.use((req, res, next) => {
+    if (req.headers['content-type'] !== 'application/json') {
+        return res.status(400).json({ error: 'Invalid content type. Only JSON is accepted.' });
+    }
+    next();
+});
+
+// Performance logging middleware
 app.use((req, res, next) => {
     const start = Date.now();
     res.on('finish', () => {
@@ -23,6 +32,7 @@ app.use((req, res, next) => {
     next();
 });
 
+// API routes
 app.post('/api/createCheck', async (req, res) => {
     try {
         const user = await prisma.user.findFirst();
@@ -58,7 +68,6 @@ app.post("/api/login", async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        // Find the user by username
         const user = await prisma.user.findFirst({
             where: { username },
         });
@@ -67,7 +76,6 @@ app.post("/api/login", async (req, res) => {
             return res.status(401).json({ success: false, message: "Invalid username or password!" });
         }
 
-        // Compare the entered password with the stored hashed password
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({ success: false, message: "Invalid username or password!" });
@@ -80,21 +88,17 @@ app.post("/api/login", async (req, res) => {
     }
 });
 
-
 app.post("/api/register", async (req, res) => {
     const { username, password } = req.body;
 
-    // Validate username and password
     if (!username || !password) {
         return res.status(400).json({ message: "Username and password are required." });
     }
 
-    // Check if password is at least 12 characters long
     if (password.length < 12) {
         return res.status(400).json({ message: "Password must be at least 12 characters long." });
     }
 
-    // Check if username already exists
     const existingUser = await prisma.user.findFirst({
         where: {
             username: username
@@ -105,18 +109,16 @@ app.post("/api/register", async (req, res) => {
         return res.status(400).json({ message: "Username is already taken." });
     }
 
-    // Hash the password using bcrypt
-    const hashedPassword = await bcrypt.hash(password, 10);  // 10 salt rounds
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     try {
-        // Create a new user and save to the database
         const newUser = await prisma.user.create({
             data: {
                 username,
-                password: hashedPassword, // Save hashed password
+                password: hashedPassword,
             }
         });
-        res.json({success:true, ok:true});
+        res.json({ success: true, ok: true });
     } catch (error) {
         console.error("❌ Error registering user:", error);
         res.status(500).json({ message: "Server error, please try again later." });
