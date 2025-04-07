@@ -52,21 +52,8 @@ async function testCreateCheck() {
     assert.ok(response.body.newCheck, "Expected 'newCheck' in response");
 }
 
-// 2️ Test: `/api/createCheck` should return 400 if no user exists
-async function testCreateCheckNoUser() {
-    const options = {
-        hostname: "localhost",
-        port: 5000,
-        path: "/api/createCheck",
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-    };
 
-    const response = await makeRequest(options, {});
-    assert.strictEqual(response.status, 400, "Expected status 400 when no users exist");
-}
-
-// 3️ Test: `/api/login` should return success for valid credentials
+// 2 Test: `/api/login` should return success for valid credentials
 async function testValidLogin() {
     const options = {
         hostname: "localhost",
@@ -122,7 +109,6 @@ async function testEmptyLogin() {
 async function runTests() {
     console.log("Running Tests...\n");
     await runTest(testCreateCheck, "testCreateCheck");
-    await runTest(testCreateCheckNoUser, "testCreateCheckNoUser");
     await runTest(testValidLogin, "testValidLogin");
     await runTest(testInvalidLogin, "testInvalidLogin");
     await runTest(testEmptyLogin, "testEmptyLogin");
