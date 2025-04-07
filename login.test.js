@@ -210,3 +210,5 @@ async function runTests() {
 }
 
 runTests();
+
+// Šitas komentaras pridėtas dėl CI testavimo
