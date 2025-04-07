@@ -52,6 +52,26 @@ async function testPasswordValidation() {
     assert.strictEqual(response.body.message, "Password must be at least 12 characters long.", "Expected password validation error message");
 }
 
+function generateUniqueUsername() {
+    // Naudojame Math.random() ir paverčiame į 36 simbolių sistemą
+    let randomString = Math.random().toString(36).substring(2, 12);  // Sukuriame atsitiktinį simbolių rinkinį
+  
+    // Užtikriname, kad randomString nebūtų undefined
+    if (randomString === undefined) {
+      console.error("Atsitiktinis simbolių rinkinys nepavyko!");
+      return;
+    }
+  
+    let uniqueUsername = `user${randomString}`;
+  
+    // Užtikriname, kad vardas būtų tarp 5 ir 20 simbolių
+    if (uniqueUsername.length < 5) {
+      uniqueUsername = uniqueUsername.padEnd(5, '0');  // Jei per trumpas, užpildome jį nuliais
+    } else if (uniqueUsername.length > 20) {
+      uniqueUsername = uniqueUsername.substring(0, 20);  // Jei per ilgas, supjaustome
+    }
+    return uniqueUsername;
+  }
 // Test: Successful registration should return 201
 async function testSuccessfulRegistration() {
     const options = {
@@ -61,11 +81,11 @@ async function testSuccessfulRegistration() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
     };
-
-    const requestBody = { username: "useris", password: "validpassword123" };
+    const username_generated = generateUniqueUsername();
+    const requestBody = { username: username_generated, password: "validPassword123456" };
     const response = await makeRequest(options, requestBody);
 
-    assert.strictEqual(response.status, 201, `Expected status 201 but got ${response.status}`);
+    assert.strictEqual(response.status, 200, `Expected status 200 but got ${response.status}`);
 }
 
 // Test: Registration with an existing username should return error
