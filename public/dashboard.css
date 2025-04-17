@@ -21,7 +21,37 @@ body {
     background-color: #4CAF50;
     color: white;
     padding: 20px;
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+#welcome-message {
+    margin-right: 20px;
+}
+
+#month-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#month-selector label {
+    color: white;
+}
+
+#month-selector select {
+    padding: 5px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: none;
 }
 
 .dashboard-body {
@@ -62,4 +92,24 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+#expenses-section {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+#expenses-section h2 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.expense-item {
+    background-color: #fff;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }

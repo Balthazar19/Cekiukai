@@ -7,9 +7,30 @@
 </head>
 <body>
     <div class="dashboard-wrapper">
-        <!-- Viršuje sveikinimas -->
+        <!-- Viršuje sveikinimas ir mėnesio pasirinkimas -->
         <header class="dashboard-header">
-            <h1 id="welcome-message">Sveikas!</h1>
+            <div class="header-content">
+                <h1 id="welcome-message">Sveikas!</h1>
+                <!-- Mėnesio pasirinkimo dropdown -->
+                <div id="month-selector">
+                    <label for="month">Pasirinkite mėnesį:</label>
+                    <select id="month">
+                        <option value="-1">Viso</option>
+                        <option value="0">Sausis</option>
+                        <option value="1">Vasaris</option>
+                        <option value="2">Kovas</option>
+                        <option value="3">Balandis</option>
+                        <option value="4">Gegužė</option>
+                        <option value="5">Birželis</option>
+                        <option value="6">Liepa</option>
+                        <option value="7">Rugpjūtis</option>
+                        <option value="8">Rugsėjis</option>
+                        <option value="9">Spalis</option>
+                        <option value="10">Lapkritis</option>
+                        <option value="11">Gruodis</option>
+                    </select>
+                </div>
+            </div>
         </header>
 
         <div class="dashboard-body">
@@ -17,14 +38,19 @@
             <nav class="dashboard-sidebar">
                 <button id="add-expense">Pridėti išlaidas</button>
                 <button id="logout">Atsijungti</button>
+                <button id="addDummyItemsBtn">Pridėti prekes</button>
             </nav>
 
-            <!-- Centras paliktas tuščias -->
+            <!-- Pagrindinis turinys -->
             <main class="dashboard-main">
-                <p>Čia galės atsirasti statistika, grafikai ar kita informacija.</p>
+                <div id="expenses-section">
+                    <h2>Jūsų išlaidos</h2>
+                    <div id="total-expenses">Kraunama...</div>
+                </div>
             </main>
         </div>
     </div>
+    <div id="check-count">Kraunama...</div>
 
     <script src="dashboard.js"></script>
 </body>
