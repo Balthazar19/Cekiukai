@@ -1,0 +1,115 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    height: 100vh;
+}
+
+.dashboard-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.dashboard-header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+#welcome-message {
+    margin-right: 20px;
+}
+
+#month-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#month-selector label {
+    color: white;
+}
+
+#month-selector select {
+    padding: 5px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: none;
+}
+
+.dashboard-body {
+    display: flex;
+    flex: 1;
+}
+
+.dashboard-sidebar {
+    width: 200px;
+    background-color: #fff;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dashboard-sidebar button {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.dashboard-sidebar button:hover {
+    background-color: #45a049;
+}
+
+.dashboard-main {
+    flex: 1;
+    padding: 40px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#expenses-section {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+#expenses-section h2 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.expense-item {
+    background-color: #fff;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
