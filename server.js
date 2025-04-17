@@ -125,6 +125,38 @@ app.post("/api/register", async (req, res) => {
     }
 });
 
+app.get('/api/user', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];  // Paimame tokeną iš Authorization header
+
+        if (!token) {
+            return res.status(401).json({ error: "Neprisijungęs vartotojas" });
+        }
+
+        // Patikriname tokeną
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.userId;
+
+        // Randame vartotoją pagal userId
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: "Vartotojas nerastas" });
+        }
+
+        // Grąžiname vartotojo vardą
+        res.json({ name: user.username });
+
+    } catch (error) {
+        console.error("Klaida gaunant vartotojo duomenis:", error);
+        res.status(500).json({ error: "Serverio klaida" });
+    }
+});
+
+
+
 const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== "test") {
     app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
