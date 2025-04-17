@@ -31,6 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
     addExpenseBtn.addEventListener("click", () => {
         window.location.href = "index.html";
     });
+    const addDummyItemsBtn = document.getElementById("addDummyItemsBtn");
+    addDummyItemsBtn.addEventListener("click", async () => {
+        await addDummyCheck(user.userId);
+    });
 
     // Funkcija, kuri gauna ir atspausdina čekius
     async function getUserChecks(username) {
@@ -65,7 +69,44 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Įvyko klaida gaunant čekius:", error);
         }
     }
+    // Funkcija, kuri sukuria laikiną čekį
+    async function addDummyCheck(userId) {
+        const products = [
+            { name: "Milk", price: 2.50, category: "Dairy" },
+            { name: "Bread", price: 1.50, category: "Bakery" },
+            { name: "Cheese", price: 5.00, category: "Dairy" }
+        ];
 
+        // Apskaičiuojame bendrą kainą
+        const totalPrice = products.reduce((sum, product) => sum + product.price, 0);
+
+        try {
+            const response = await fetch("http://localhost:5000/api/tempCreateCheck", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    products: products,
+                    totalPrice: totalPrice
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                console.log("Check added successfully:", result);
+                alert("Čekis sėkmingai pridėtas!");
+                getUserChecks(user.username);  // Perkrauname čekių sąrašą
+            } else {
+                console.error("Failed to add check:", result.error);
+                alert("Nepavyko pridėti čekio!");
+            }
+        } catch (error) {
+            console.error("Klaida pridedant čekį:", error);
+        }
+    }
     // Funkcija, kuri apskaičiuoja išlaidas pagal pasirinktą mėnesį
     function calculateMonthlySpending(checks, selectedMonth = -1) {
         const now = new Date();
@@ -86,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
             });
         }
-
+        
         // Suskaičiuojame bendrą sumą
         const total = filteredChecks.reduce((sum, check) => sum + check.totalPrice, 0);
 
