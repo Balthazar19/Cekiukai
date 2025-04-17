@@ -21,8 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.ok && result.success) {
                 // 👉 Saugojam vartotojo duomenis į localStorage
-                localStorage.setItem('user', JSON.stringify({ username }));
-
+                localStorage.setItem('user', JSON.stringify({ 
+                    username: result.username, 
+                    userId: result.userId 
+                }));
                 loginStatus.textContent = "Login successful!";
                 loginStatus.style.color = "green";
 
