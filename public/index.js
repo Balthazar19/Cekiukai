@@ -4,12 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('file-input');
     const processBtn = document.getElementById('process-btn');
     const status = document.getElementById('status');
-    const output = document.getElementById('output');
     const imagePreview = document.getElementById('image-preview');
-    const editStatus = document.getElementById('edit-status');
     const ocrTextarea = document.getElementById('ocr-text');
     const cancelBtn = document.getElementById('cancel-edit-btn');
     const saveBtn = document.getElementById('save-edited-btn');
+    const editStatus = document.getElementById('edit-status');
 
     processBtn.addEventListener('click', async () => {
         if (fileInput.files.length === 0) {
@@ -44,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             imagePreview.innerHTML = `<img src="${URL.createObjectURL(image)}" alt="Preview" class="preview-image">`;
-
             status.textContent = 'Processing...';
             status.style.color = 'blue';
 
@@ -65,8 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 cancelBtn.style.display = 'inline-block';
                 saveBtn.style.display = 'inline-block';
 
-                status.textContent = 'Check saved successfully!';
-                status.style.color = 'green';
                 editStatus.textContent = '';
                 editStatus.style.color = '#333';
 
@@ -77,37 +73,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
 
                 saveBtn.onclick = async () => {
-                    const editedText = ocrTextarea.value;
+                    const user = JSON.parse(localStorage.getItem("user"));
+                    if (!user || !user.userId) {
+                        editStatus.textContent = 'User not logged in or userId missing.';
+                        editStatus.style.color = 'red';
+                        return;
+                    }
 
-                    const requestBody = {
-                        userId: "dummyUserId123",
-                        extractedText: editedText,
-                        products: [
-                            { name: "Milk", price: 2.50 },
-                            { name: "Bread", price: 1.50 },
-                            { name: "Cheese", price: 5.00 }
-                        ],
-                        totalPrice: 9.00
+                    let structuredData;
+                    try {
+                        structuredData = JSON.parse(ocrTextarea.value);
+                    } catch (e) {
+                        editStatus.textContent = 'Invalid JSON format.';
+                        editStatus.style.color = 'red';
+                        return;
+                    }
+
+                    const dataToSend = {
+                        ...structuredData,
+                        userId: user.userId
                     };
 
                     try {
                         const response = await fetch('http://localhost:5000/api/createCheck', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(requestBody),
+                            body: JSON.stringify(dataToSend),
                         });
 
                         const result = await response.json();
                         console.log("✅ Server Response:", result);
-                        editStatus.textContent = 'Check saved successfully!';
-                        editStatus.style.color = 'green';
+
+                        if (response.ok) {
+                            editStatus.textContent = 'Check saved successfully!';
+                            editStatus.style.color = 'green';
+                            // Optional: redirect to dashboard
+                            // window.location.href = 'dashboard.html';
+                        } else {
+                            editStatus.textContent = result.error || 'Error saving check.';
+                            editStatus.style.color = 'red';
+                        }
                     } catch (err) {
                         console.error(err);
                         editStatus.textContent = 'Error sending data to the server';
                         editStatus.style.color = 'red';
                     }
                 };
-
             } catch (error) {
                 console.error(error);
                 status.textContent = 'Error processing the receipt.';
