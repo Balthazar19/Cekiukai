@@ -46,13 +46,14 @@ button:hover {
   background-color: #45a049;
 }
 
-#status {
+#status,
+#edit-status {
   margin-top: 15px;
   font-weight: bold;
 }
 
 #output {
-  white-space: pre-wrap;
+  
   background: #fff;
   padding: 15px;
   margin: 20px auto;
@@ -63,6 +64,23 @@ button:hover {
   text-align: left;
   overflow-wrap: break-word;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#output textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 10px;
+  font-family: monospace;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: vertical;
+  box-sizing: border-box;
+  background-color: #fdfdfd;
+}
+
+#edit-status {
+  color: #333;
 }
 
 .preview-image {

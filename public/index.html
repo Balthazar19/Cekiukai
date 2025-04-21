@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-
     <title>Čekiukai</title>
     <link rel="stylesheet" href="index.css">
 </head>
@@ -19,7 +16,16 @@
 
     <p id="status"></p>
     <div id="image-preview"></div>
-    <pre id="output"></pre>
+
+    <div id="output">
+        <textarea id="ocr-text" rows="10" cols="80" style="display: none;"></textarea><br>
+        <div style="margin-top: 10px;">
+            <button id="cancel-edit-btn" style="display: none; margin-right: 10px;">Cancel changes.</button>
+            <button id="save-edited-btn" style="display: none;">Save text.</button>
+        </div>
+    </div>
+
+    <div id="edit-status"></div>
 
     <script src="index.js" type="module"></script>
 </body>
