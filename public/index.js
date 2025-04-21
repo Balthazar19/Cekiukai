@@ -105,10 +105,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         console.log("✅ Server Response:", result);
 
                         if (response.ok) {
-                            editStatus.textContent = 'Check saved successfully!';
+                            editStatus.textContent = '✅ Check saved successfully! Redirecting to dashboard...';
                             editStatus.style.color = 'green';
-                            // Optional: redirect to dashboard
-                            // window.location.href = 'dashboard.html';
+                        
+                            setTimeout(() => {
+                                window.location.href = 'dashboard.html';
+                            }, 2000);
                         } else {
                             editStatus.textContent = result.error || 'Error saving check.';
                             editStatus.style.color = 'red';
