@@ -35,75 +35,60 @@ app.use((req, res, next) => {
 // API routes
 app.post('/api/createCheck', async (req, res) => {
     try {
-        const user = await prisma.user.findFirst();
-        if (!user) {
-            return res.status(400).json({ error: "No users found in the database" });
-        }
-        const userId = user.id;
+        const { userId, products, totalPrice } = req.body;
 
-        const products = [
-            { name: "Milk", price: 2.50 },
-            { name: "Bread", price: 1.50 },
-            { name: "Cheese", price: 5.00 }
-        ];
-        const totalPrice = 9.00;
+        if (!userId || !Array.isArray(products) || typeof totalPrice !== 'number') {
+            return res.status(400).json({ error: "Missing or invalid 'userId', 'products' or 'totalPrice'." });
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
 
         const newCheck = await prisma.check.create({
             data: {
-                userId,
+                userId: user.id,
                 products,
                 totalPrice,
                 createdAt: new Date(),
             },
         });
 
-        res.json({ message: "✅ Dummy check saved successfully!", newCheck });
+        res.json({ message: "✅ Check saved successfully!", newCheck });
     } catch (error) {
-        console.error("❌ Error saving dummy check:", error);
+        console.error("❌ Error saving check:", error);
         res.status(500).json({ error: "Failed to save check" });
     }
 });
-app.post('/api/tempCreateCheck', async (req, res) => {
+
+app.put('/api/updateCheck/:id', async (req, res) => {
+    const checkId = req.params.id;
+    const { products, totalPrice } = req.body;
+
+    if (!Array.isArray(products) || typeof totalPrice !== 'number') {
+        return res.status(400).json({ error: "Invalid data: 'products' must be array and 'totalPrice' must be number" });
+    }
+
     try {
-        // Paimame vartotojo username ir userId iš užklausos
-        const { username, userId } = req.body;
-
-        // Patikriname, ar vartotojas egzistuoja pagal userId
-        const user = await prisma.user.findFirst({
-            where: { id: userId }
-        });
-
-        if (!user) {
-            return res.status(400).json({ error: "User not found" });
-        }
-
-        // Sukuriame prekes su kategorijomis
-        const products = [
-            { name: "Milk", price: 2.50, category: "Dairy" },
-            { name: "Bread", price: 1.50, category: "Bakery" },
-            { name: "Cheese", price: 5.00, category: "Dairy" }
-        ];
-
-        // Apskaičiuojame bendrą kainą
-        const totalPrice = products.reduce((sum, product) => sum + product.price, 0);
-
-        // Sukuriame naują "check" įrašą su prekėmis
-        const newCheck = await prisma.check.create({
+        const updatedCheck = await prisma.check.update({
+            where: { id: checkId },
             data: {
-                userId: user.id,  // Susiejame su vartotojo ID
-                products: products,  // Prekės bus JSON duomenys
-                totalPrice: totalPrice,
-                createdAt: new Date(),
-            },
+                products,
+                totalPrice
+            }
         });
 
-        // Grąžiname atsakymą su pranešimu apie sėkmingą prekių sukūrimą
-        res.json({ message: "✅ Dummy check saved successfully!", newCheck });
+        res.json({ message: "Check updated", updatedCheck });
     } catch (error) {
-        console.error("❌ Error saving dummy check:", error);
-        res.status(500).json({ error: "Failed to save check" });
+        console.error("Error updating check:", error);
+        res.status(500).json({ error: "Failed to update check" });
     }
 });
+
 
 
 app.post("/api/login", async (req, res) => {
@@ -230,5 +215,7 @@ const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== "test") {
     app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
 }
+
+
 
 export default app;
