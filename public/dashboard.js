@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalExpensesElement = document.getElementById("total-expenses");
     const latestCheckElement = document.getElementById("latest-check");
     const monthSelector = document.getElementById("month");
-    const addItemsBtn = document.getElementById("addDummyItemsBtn");
     const editTextarea = document.getElementById("edit-check-textarea");
     const editBtn = document.getElementById("edit-check-btn");
     const editStatus = document.getElementById("edit-check-status");
@@ -44,25 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
         calculateMonthlySpending(currentChecks, selectedMonthValue);
     });
 
-    addItemsBtn.addEventListener("click", () => {
-        if (!latestCheck) {
-            alert("Nėra naujausio čekio!");
-            return;
-        }
-
-        // Pridedam prie sąrašo
-        currentChecks.push(latestCheck);
-
-        // Atnaujinam išlaidas pagal pasirinktą mėnesį
-        calculateMonthlySpending(currentChecks, selectedMonthValue);
-
-        // Pašalinam iš naujausio rodymo
-        latestCheckElement.innerHTML = "✅ Čekis pridėtas prie išlaidų.";
-        editTextarea.style.display = "none";
-        editBtn.style.display = "none";
-        latestCheck = null;
-    });
-
     async function getUserChecks(username) {
         try {
             const response = await fetch(`http://localhost:5000/api/checks?username=${username}`, {
@@ -86,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Visi be naujausio
                 currentChecks = checks.filter(check => check.id !== latestCheck.id);
 
-                calculateMonthlySpending(currentChecks, selectedMonthValue);
+                calculateMonthlySpending(checks, selectedMonthValue);
                 displayLatestCheck();
             } else {
                 checkCountElement.textContent = "Neturite čekių.";
@@ -129,7 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
         latestCheckElement.innerHTML = `
             <strong>Data:</strong> ${new Date(latestCheck.createdAt).toLocaleString()}<br>
             <strong>Iš viso:</strong> €${latestCheck.totalPrice.toFixed(2)}<br>
-            <strong>Produktai:</strong><br>${productList}
         `;
 
         editTextarea.style.display = "block";
@@ -163,14 +142,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 const result = await response.json();
 
                 if (response.ok) {
-                    editStatus.textContent = "✅ Čekis atnaujintas sėkmingai!";
-                    editStatus.style.color = "green";
+
+                    // Atnaujinam duomenis ir įtraukiam į bendras išlaidas
                     latestCheck = {
                         ...latestCheck,
                         products: updatedData.products,
                         totalPrice: updatedData.totalPrice
                     };
-                    displayLatestCheck(); // perkraunam vaizdą
+
+                    currentChecks.push(latestCheck);
+                    calculateMonthlySpending(currentChecks, selectedMonthValue);
+
+                    // Išvalom laukus
+                    latestCheckElement.innerHTML = "✅ Čekis pridėtas prie išlaidų.";
+                    editTextarea.style.display = "none";
+                    editBtn.style.display = "none";
+                    latestCheck = null;
                 } else {
                     editStatus.textContent = result.error || "❌ Nepavyko atnaujinti čekio.";
                     editStatus.style.color = "red";

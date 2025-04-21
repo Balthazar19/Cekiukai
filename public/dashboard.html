@@ -38,20 +38,32 @@
             <nav class="dashboard-sidebar">
                 <button id="add-expense">Pridėti išlaidas</button>
                 <button id="logout">Atsijungti</button>
-                <button id="addDummyItemsBtn">Pridėti prekes</button>
             </nav>
 
             <!-- Pagrindinis turinys -->
             <main class="dashboard-main">
-                <div id="expenses-section">
-                    <h2>Jūsų išlaidos</h2>
-                    <div id="total-expenses">Kraunama...</div>
-                    <div id="latest-check">Naujausias čekis: kraunama...</div>
-                    <textarea id="edit-check-textarea" style="display: none; width: 100%; height: 200px; margin-top: 10px;"></textarea>
-                    <div id="edit-check-status" style="margin-top: 5px;"></div>
-                    <button id="edit-check-btn" style="display: none;">Išsaugoti pakeitimus</button>
+                <!-- Centrinė antraštė viršuje -->
+                <div class="dashboard-center-heading">
+                    <h2>Jūsų išlaidos:</h2>
+                    <div id="total-expenses">Išlaidos: €0.00</div>
+                </div>
+            
+                <!-- Turinio zona su kairės ir dešinės sekcijomis -->
+                <div class="dashboard-content">
+                    <section class="latest-check-section">
+                        <h3>NAUJAUSIAS ČEKIS</h3>
+                        <div id="latest-check">Kraunama...</div>
+                        <textarea id="edit-check-textarea" style="display: none;"></textarea>
+                        <div id="edit-check-status"></div>
+                        <button id="edit-check-btn" style="display: none;">Išsaugoti pakeitimus</button>
+                    </section>
+            
+                    <section class="expenses-chart-placeholder">
+                        <!-- Čia bus grafikas -->
+                    </section>
                 </div>
             </main>
+            
         </div>
     </div>
     <div id="check-count">Kraunama...</div>
