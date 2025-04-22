@@ -51,22 +51,22 @@ document.addEventListener("DOMContentLoaded", () => {
                     'Content-Type': 'application/json'
                 }
             });
-
+    
             if (!response.ok) throw new Error(`Klaida gavus čekius: ${response.statusText}`);
-
+    
             const checks = await response.json();
             if (checks.length > 0) {
                 checkCountElement.textContent = `Jūs turite ${checks.length} čekius.`;
-
-                // Renkamės naujausią
+    
+                // Nustatom naujausią
                 latestCheck = checks.reduce((a, b) =>
                     new Date(a.createdAt) > new Date(b.createdAt) ? a : b
                 );
-
-                // Visi be naujausio
-                currentChecks = checks.filter(check => check.id !== latestCheck.id);
-
-                calculateMonthlySpending(checks, selectedMonthValue);
+    
+                // Naudojam VISUS čekius (įskaitant naujausią)
+                currentChecks = checks;
+    
+                calculateMonthlySpending(currentChecks, selectedMonthValue); // su visais čekiais
                 displayLatestCheck();
             } else {
                 checkCountElement.textContent = "Neturite čekių.";
@@ -96,6 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const total = filteredChecks.reduce((sum, check) => sum + check.totalPrice, 0);
         totalExpensesElement.textContent = `Išlaidos: €${total.toFixed(2)}`;
+        renderCategoryChart(filteredChecks); // <-- pridėta
+        
     }
 
     function displayLatestCheck() {
@@ -142,22 +144,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 const result = await response.json();
 
                 if (response.ok) {
+                    // Atnaujink latestCheck objektą
+                    latestCheck.products = updatedData.products;
+                    latestCheck.totalPrice = updatedData.totalPrice;
 
-                    // Atnaujinam duomenis ir įtraukiam į bendras išlaidas
-                    latestCheck = {
-                        ...latestCheck,
-                        products: updatedData.products,
-                        totalPrice: updatedData.totalPrice
-                    };
+                    // Atnaujink currentChecks masyvo viduje tą patį čekį
+                    const index = currentChecks.findIndex(c => c.id === latestCheck.id);
+                    if (index !== -1) {
+                        currentChecks[index] = latestCheck;
+                    }
 
-                    currentChecks.push(latestCheck);
                     calculateMonthlySpending(currentChecks, selectedMonthValue);
+                    displayLatestCheck(); // palieka rodomą čekį
 
-                    // Išvalom laukus
-                    latestCheckElement.innerHTML = "✅ Čekis pridėtas prie išlaidų.";
-                    editTextarea.style.display = "none";
-                    editBtn.style.display = "none";
-                    latestCheck = null;
+                    editStatus.textContent = "✅ Čekis sėkmingai atnaujintas.";
+                    editStatus.style.color = "green";
                 } else {
                     editStatus.textContent = result.error || "❌ Nepavyko atnaujinti čekio.";
                     editStatus.style.color = "red";
@@ -168,5 +169,100 @@ document.addEventListener("DOMContentLoaded", () => {
                 editStatus.style.color = "red";
             }
         };
+    }
+
+    let categoryChartInstance = null;
+
+    function renderCategoryChart(checks) {
+        const categoryTotals = {};
+    
+        checks.forEach(check => {
+            check.products.forEach(product => {
+                const category = product.category || "Kita";
+                if (!categoryTotals[category]) {
+                    categoryTotals[category] = 0;
+                }
+                categoryTotals[category] += product.price;
+            });
+        });
+    
+        const labels = Object.keys(categoryTotals);
+        const data = Object.values(categoryTotals);
+        const totalSum = data.reduce((a, b) => a + b, 0);
+    
+        const backgroundColors = [
+            "#4CAF50", "#FF9800", "#03A9F4", "#E91E63",
+            "#9C27B0", "#FF5722", "#8BC34A", "#607D8B",
+            "#FFC107", "#00BCD4"
+        ];
+    
+        const ctx = document.getElementById('categoryChart').getContext('2d');
+    
+        if (categoryChartInstance) {
+            categoryChartInstance.destroy();
+        }
+    
+        categoryChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColors.slice(0, labels.length),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            generateLabels(chart) {
+                                const data = chart.data;
+                                return data.labels.map((label, i) => {
+                                    const value = data.datasets[0].data[i];
+                                    return {
+                                        text: `${label} (€${value.toFixed(2)})`,
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        strokeStyle: data.datasets[0].backgroundColor[i],
+                                        lineWidth: 1,
+                                        hidden: false,
+                                        index: i
+                                    };
+                                });
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Išlaidos pagal kategorijas'
+                    },
+                    datalabels: {
+                        display: (context) => {
+                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            const value = context.dataset.data[context.dataIndex];
+                            const percentage = (value / total) * 100;
+                            return percentage >= 3; // rodyti tik jei ≥ 5%
+                        },
+                        formatter: (value, context) => {
+                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            const percentage = (value / total * 100).toFixed(1);
+                            return `${percentage}%`;
+                        },
+                        color: '#fff',
+                        font: {
+                            weight: 'bold',
+                            size: 13 // visada toks pats dydis
+                        },
+                        clamp: true,
+                        
+                        align: 'start',
+                        offset: 4
+                    }
+                    
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
     }
 });
